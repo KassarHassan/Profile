@@ -1,0 +1,58 @@
+name: Generate Profile Animations
+
+on:
+schedule:
+- cron: "0 18 * * *"
+
+workflow_dispatch:
+
+permissions:
+contents: write
+
+jobs:
+generate-3d-contributions:
+name: Generate 3D Contribution Graph
+runs-on: ubuntu-latest
+
+```
+steps:
+  - name: Check out repository
+    uses: actions/checkout@v4
+
+  - name: Generate 3D contribution calendar
+    uses: yoshi389111/github-profile-3d-contrib@0.9.0
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      USERNAME: KassarHassan
+
+  - name: Commit generated 3D graph
+    run: |
+      git config user.name "github-actions[bot]"
+      git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      git add profile-3d-contrib/
+      git diff --cached --quiet || git commit -m "chore: update 3D contribution graph"
+      git push
+```
+
+generate-contribution-snake:
+name: Generate Contribution Snake
+runs-on: ubuntu-latest
+
+```
+steps:
+  - name: Generate snake SVG files
+    uses: Platane/snk/svg-only@v3
+    with:
+      github_user_name: KassarHassan
+      outputs: |
+        dist/github-contribution-grid-snake.svg
+        dist/github-contribution-grid-snake-dark.svg?palette=github-dark
+
+  - name: Publish snake to output branch
+    uses: crazy-max/ghaction-github-pages@v4
+    with:
+      build_dir: dist
+      branch: output
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
